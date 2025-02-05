@@ -1,0 +1,134 @@
+---
+title: "Lab 3"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(deSolve)
+library(patchwork)
+```
+
+```{r}
+knitr::opts_chunk$set(
+        echo = TRUE,
+        warning = FALSE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() +theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.color = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_color_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+```{r}
+SIR=function(t,state,parameters){
+  with(as.list(c(state,parameters)),{
+    # rate of change
+    dS = -beta*S*I/N;
+    dI= beta*S*I/N - gamma*I;
+    dR = gamma*I;
+    
+    # return the rate of change
+    list(c(dS, dI, dR))
+  }) # end with(as.list...)
+}
+```
+
+```{r}
+N=1e5; # population size
+I0=10; # initial No. of Infectious people
+S0=N-I0;  # initial No. of Susceptible people
+R0=N-I0-S0 # initial No. of Recovered people
+state=c(S=S0, I=I0, R=R0);  # store the initial conditions I & S together 
+parameters=c(beta=.5,gamma=.3);  # store the model parameters, unit: per day
+
+times=seq(0,100,by=1);  # set simulation time steps: 0 to 100 days here
+
+# Step 3: call the ode function to generate the simulation
+sim = ode(y=state,times=times,func=SIR,parms=parameters);
+```
+
+
+# Question 1
+Compute and plot R over time for the following epidemic setting.
+What is the final epidemic size (i.e. R at the end of the epidemic)?
+
+```{r}
+beta=.5; gamma=.3;
+parameters=c(beta=beta,gamma=gamma)
+times=seq(0,365,by=1)  # run for a year
+state=c(S=S0,I=I0, R=R0)
+sim=ode(y=state,times=times,func=SIR,parms=parameters)
+```
+
+
+```{r}
+susceptible = ggplot(sim, aes(x = time, y = S, color = time)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Susceptible Over Time", 
+       x = "Day", 
+       y = "Number of People Susceptible") +
+  theme_minimal()
+```
+
+```{r}
+infectious = ggplot(sim, aes(x = time, y = I, color = time)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Infectious Over Time", 
+       x = "Day", 
+       y = "Number of People Infectious") +
+  theme_minimal()
+```
+
+```{r}
+recovered = ggplot(sim, aes(x = time, y = R, color = time)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Recovered Over Time", 
+       x = "Day", 
+       y = "Number of People Recovered") +
+  theme_minimal()
+```
+
+```{r}
+susceptible + infectious + recovered
+```
+
+The final epidemic size or R at the end of the epidemic is 67582.73.
+
+# Question 2
+What are the differences among the simulations? Explain what you see.
+
+# Question 3
+Plot log(I) vs t (try t=3 to 8 weeks) and see when the exponential period ends.
+
+```{r}
+
+```
+
+
+# Question 4
+Fit log(I) to t over the exponential period, and find the slope of the linear regression. What does the slope represent?
+
+
+# Question 5
+Show your reseults and check the final S and I (is S=0? is I=0). Why does the epidemic die out eventually?
+
+```{r}
+beta=.5; gamma=.3;
+parameters=c(beta=beta,gamma=gamma)
+times=seq(0,600,by=1) 
+state=c(S=S0,I=I0, R=R0)
+sim=ode(y=state,times=times,func=SIR,parms=parameters)
+```
