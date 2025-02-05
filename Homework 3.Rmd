@@ -7,6 +7,7 @@ output: github_document
 library(tidyverse)
 library(deSolve)
 library(patchwork)
+library(pacman)
 ```
 
 ```{r}
@@ -102,7 +103,20 @@ recovered = ggplot(sim, aes(x = time, y = R, color = time)) +
 ```
 
 ```{r}
-susceptible + infectious + recovered
+model = susceptible + infectious + recovered
+```
+
+```{r}
+sim_df = as.data.frame(sim)
+sim_df$week = ceiling(sim_df$time / 7)
+
+weekly_data = sim_df |> 
+  group_by(week) |> 
+  summarize(
+    S_weekly = mean(S),
+    I_weekly = mean(I),
+    R_weekly = mean(R)
+  )
 ```
 
 The final epidemic size or R at the end of the epidemic is 67582.73.
@@ -114,12 +128,25 @@ What are the differences among the simulations? Explain what you see.
 Plot log(I) vs t (try t=3 to 8 weeks) and see when the exponential period ends.
 
 ```{r}
+lnI = log(Iexp)
+print(lnI)
 
+tt = seq(1, length = WkExp, by = 7)
+print(tt)
 ```
 
 
 # Question 4
 Fit log(I) to t over the exponential period, and find the slope of the linear regression. What does the slope represent?
+
+```{r}
+fit = lm(lnI ~ tt)
+print(fit)
+
+slope = fit$coeff[2]
+print(slope)
+```
+
 
 
 # Question 5
