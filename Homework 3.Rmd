@@ -105,7 +105,6 @@ q1_model
 
 ```{r}
 sim_df = as.data.frame(sim)
-return(sim_df)
 sim_df$week = ceiling(sim_df$time / 7)
 
 weekly_data = sim_df |> 
